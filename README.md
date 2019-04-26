@@ -14,7 +14,7 @@ conda env create -f environment.yml
 
 * Install this repo to your conda environment:
 ```shell
-conda activate snow_aso
+conda activate raster_compare
 cd path/to/repository/raster_compare
 pip install -e .
 ```
