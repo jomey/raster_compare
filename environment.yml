@@ -1,4 +1,4 @@
-name: snow_aso
+name: raster_compare
 channels:
   - conda-forge
   - defaults
@@ -9,7 +9,6 @@ dependencies:
   - matplotlib
   - pandas
   - pillow
-  - pdal=1.9
   - pip
   - python-pdal
   - statsmodels
