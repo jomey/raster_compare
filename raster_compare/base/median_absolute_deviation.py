@@ -18,7 +18,7 @@ class MedianAbsoluteDeviation(object):
 
     def __init__(self, data):
         self._data = data
-        self._data_mean = np.median(self.data)
+        self._data_median = np.median(self.data)
         self._percentiles = {}
 
     @property
@@ -27,7 +27,7 @@ class MedianAbsoluteDeviation(object):
 
     @property
     def data_median(self):
-        return self._data_mean
+        return self._data_median
 
     @property
     def median(self):
