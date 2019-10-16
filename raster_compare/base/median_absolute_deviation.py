@@ -9,7 +9,7 @@ class MedianAbsoluteDeviation(object):
     Median Absolute Deviation
     """
 
-    MAD_CONSTANT = 1.4826
+    NMAD_CONSTANT = 1.4826
 
     STANDARD_DEVIATIONS = {
         1: 68.27,
@@ -41,7 +41,7 @@ class MedianAbsoluteDeviation(object):
         NMAD from Höhle & Höhle, 2009
         """
         absolute_difference = np.vectorize(self.absolute_difference)
-        return self.MAD_CONSTANT * np.median(absolute_difference(self.data))
+        return self.NMAD_CONSTANT * np.median(absolute_difference(self.data))
 
     @functools.lru_cache(16)
     def percentile(self, percent, absolute=False):
