@@ -65,14 +65,13 @@ class AreaDifferences(PlotBase):
 
         fig = plt.figure(constrained_layout=False)
         fig.set_size_inches(17, 14)
-        heights = [2, 1]
-        grid_opts=dict(figure=fig, height_ratios=heights)
+        grid_opts = dict(figure=fig, height_ratios=[3, 1])
 
         difference = self.data.band_filtered
 
         if self.data_description is 'Elevation':
             grid_spec = GridSpec(
-                nrows=2, ncols=3, width_ratios=[3,2,3], **grid_opts
+                nrows=2, ncols=3, width_ratios=[3, 2, 2], **grid_opts
             )
             bins = np.arange(
                 difference.min(),
@@ -86,7 +85,7 @@ class AreaDifferences(PlotBase):
             )
         else:
             grid_spec = GridSpec(
-                nrows=2, ncols=2, width_ratios=[3,2], **grid_opts
+                nrows=2, ncols=2, width_ratios=[3, 2], **grid_opts
             )
             bounds = dict()
             bins = 'auto'
