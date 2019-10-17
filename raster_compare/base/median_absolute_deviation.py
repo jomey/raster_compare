@@ -3,6 +3,8 @@ import math
 
 import numpy as np
 
+from scipy.stats import norm
+
 
 class MedianAbsoluteDeviation(object):
     """
@@ -12,9 +14,9 @@ class MedianAbsoluteDeviation(object):
     NMAD_CONSTANT = 1.4826
 
     STANDARD_DEVIATIONS = {
-        1: 68.27,
-        2: 95.45,
-        3: 99.73
+        1: (1 - 2 * norm.cdf(-1)) * 100,
+        2: (1 - 2 * norm.cdf(-2)) * 100,
+        3: (1 - 2 * norm.cdf(-3)) * 100,
     }
 
     def __init__(self, data):
