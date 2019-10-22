@@ -116,6 +116,7 @@ class RasterFileCompare(object):
 
     def prepare(self):
         if self.shape_file:
-            self.lidar_dem = self.crop_to_shape(self.lidar_dem, self.shape_file)
+            self.lidar_dem = self.crop_to_shape(
+                self.lidar_dem, self.shape_file
+            )
             self.sfm_dem = self.crop_to_shape(self.sfm_dem, self.shape_file)
-
