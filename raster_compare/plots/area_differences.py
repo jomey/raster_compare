@@ -103,8 +103,10 @@ class AreaDifferences(PlotBase):
             plt, ax1, diff_plot, self.SCALE_BAR_LABEL[self.data_description]
         )
 
+        difference = difference.compressed()
+
         ax2 = fig.add_subplot(grid_spec[1, 0])
-        ax2.hist(difference.compressed(), bins=bins)
+        ax2.hist(difference, bins=bins)
         ax2.set_xlabel(self.SCALE_BAR_LABEL[self.data_description])
         ax2.set_ylabel("Count $(10^5)$")
         ax2.ticklabel_format(style='sci', axis='y', scilimits=(4, 4))
@@ -115,7 +117,7 @@ class AreaDifferences(PlotBase):
 
         ax3 = fig.add_subplot(grid_spec[1, 1])
         box = ax3.boxplot(
-            difference.compressed(),
+            difference,
             sym='k+',
             whis=self.BOX_PLOT_WHISKERS,
             positions=[0.1]
@@ -131,7 +133,7 @@ class AreaDifferences(PlotBase):
 
         if self.data_description is 'Elevation':
             ax4 = fig.add_subplot(grid_spec[1, 2])
-            probplot = sm.ProbPlot(difference.compressed())
+            probplot = sm.ProbPlot(difference)
             probplot.qqplot(ax=ax4, line='s')
             ax4.get_lines()[0].set(markersize=1)
             ax4.get_lines()[1].set(color='black', dashes=[4, 1])
