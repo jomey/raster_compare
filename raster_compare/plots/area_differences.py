@@ -12,10 +12,10 @@ from .plot_base import PlotBase
 class AreaDifferences(PlotBase):
     TITLE = '{0} differences'
 
-    HIST_TEXT = '50%:   {:5.2f}\n' \
-                'NMAD:  {:5.2f}\n' \
-                '68.3%: {:5.2f}\n' \
-                '95%:   {:5.2f}'
+    HIST_TEXT = 'Median (abs): {:5.2f}\n' \
+                'NMAD        : {:5.2f}\n' \
+                '68.3%  (abs): {:5.2f}\n' \
+                '95%    (abs): {:5.2f}'
     HIST_BIN_WIDTH = 0.01
     BOX_PLOT_TEXT = '{0:8}: {1:6.3f}'
     BOX_PLOT_WHISKERS = [5, 95]
@@ -26,12 +26,15 @@ class AreaDifferences(PlotBase):
 
     def add_hist_stats(self, ax):
         box_text = self.HIST_TEXT.format(
-            self.data.mad.median,
+            self.data.mad.percentile(50, absolute=True),
             self.data.mad.normalized(),
-            self.data.mad.standard_deviation(),
-            self.data.mad.standard_deviation(2),
+            self.data.mad.standard_deviation(1, absolute=True),
+            self.data.mad.standard_deviation(2, absolute=True),
         )
-        self.add_to_legend(ax, box_text)
+        self.add_to_legend(
+            ax, box_text,
+            loc='upper left', handlelength=0, handletextpad=0,
+        )
 
     def add_box_plot_stats(self, ax, box_plot_data):
         text = [
@@ -62,14 +65,13 @@ class AreaDifferences(PlotBase):
 
         fig = plt.figure(constrained_layout=False)
         fig.set_size_inches(17, 14)
-        heights = [2, 1]
-        grid_opts=dict(figure=fig, height_ratios=heights)
+        grid_opts = dict(figure=fig, height_ratios=[3, 1])
 
         difference = self.data.band_filtered
 
         if self.data_description is 'Elevation':
             grid_spec = GridSpec(
-                nrows=2, ncols=3, width_ratios=[3,2,3], **grid_opts
+                nrows=2, ncols=3, width_ratios=[3, 2, 2], **grid_opts
             )
             bins = np.arange(
                 difference.min(),
@@ -83,7 +85,7 @@ class AreaDifferences(PlotBase):
             )
         else:
             grid_spec = GridSpec(
-                nrows=2, ncols=2, width_ratios=[3,2], **grid_opts
+                nrows=2, ncols=2, width_ratios=[3, 2], **grid_opts
             )
             bounds = dict()
             bins = 'auto'
@@ -101,16 +103,21 @@ class AreaDifferences(PlotBase):
             plt, ax1, diff_plot, self.SCALE_BAR_LABEL[self.data_description]
         )
 
+        difference = difference.compressed()
+
         ax2 = fig.add_subplot(grid_spec[1, 0])
-        ax2.hist(difference.compressed(), bins=bins, label='Count')
+        ax2.hist(difference, bins=bins)
         ax2.set_xlabel(self.SCALE_BAR_LABEL[self.data_description])
-        ax2.set_ylabel('Count')
+        ax2.set_ylabel("Count $(10^5)$")
+        ax2.ticklabel_format(style='sci', axis='y', scilimits=(4, 4))
+        ax2.yaxis.get_offset_text().set_visible(False)
         if self.data_description is 'Elevation':
+            ax2.set_title('Relative Elevation Differences')
             self.add_hist_stats(ax2)
 
         ax3 = fig.add_subplot(grid_spec[1, 1])
         box = ax3.boxplot(
-            difference.compressed(),
+            difference,
             sym='k+',
             whis=self.BOX_PLOT_WHISKERS,
             positions=[0.1]
@@ -121,10 +128,12 @@ class AreaDifferences(PlotBase):
         )
         ax3.set_ylabel(self.SCALE_BAR_LABEL[self.data_description])
         self.add_box_plot_stats(ax3, box)
+        if self.data_description is 'Elevation':
+            ax3.set_title('Relative Elevation Differences')
 
         if self.data_description is 'Elevation':
             ax4 = fig.add_subplot(grid_spec[1, 2])
-            probplot = sm.ProbPlot(difference.compressed())
+            probplot = sm.ProbPlot(difference)
             probplot.qqplot(ax=ax4, line='s')
             ax4.get_lines()[0].set(markersize=1)
             ax4.get_lines()[1].set(color='black', dashes=[4, 1])
