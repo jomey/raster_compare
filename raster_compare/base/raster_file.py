@@ -1,4 +1,6 @@
+import errno
 import numpy as np
+import os
 from osgeo import gdal, gdalnumeric
 
 
@@ -17,7 +19,12 @@ class RasterFile(object):
 
     @file.setter
     def file(self, filename):
-        self._file = gdal.Open(filename)
+        if os.path.exists(filename):
+            self._file = gdal.Open(filename)
+        else:
+            raise FileNotFoundError(
+                errno.ENOENT, os.strerror(errno.ENOENT), filename
+            )
 
     @property
     def band_number(self):
