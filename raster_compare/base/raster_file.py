@@ -3,12 +3,17 @@ import numpy as np
 import os
 from osgeo import gdal, gdalnumeric
 
+from .median_absolute_deviation import MedianAbsoluteDeviation
+
 
 class RasterFile(object):
     def __init__(self, filename, band_number):
         self.file = str(filename)
         self._band_number = band_number
         self._extent = None
+
+        self._mad = None
+
         self._hillshade = None
         self._slope = None
         self._aspect = None
@@ -33,6 +38,14 @@ class RasterFile(object):
     @band_number.setter
     def band_number(self, band_number):
         self._band_number = band_number
+
+    @property
+    def mad(self):
+        if self._mad is None:
+            band_values = self.band_values()
+            band_values = band_values[np.isfinite(band_values)].compressed()
+            self._mad = MedianAbsoluteDeviation(band_values)
+        return self._mad
 
     @property
     def extent(self):
