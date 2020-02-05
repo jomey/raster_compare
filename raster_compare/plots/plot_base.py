@@ -116,9 +116,9 @@ class PlotBase(object):
 
     @staticmethod
     def add_to_legend(axes, text, **kwargs):
-        mean = mpatches.Patch(color='none', label=text)
+        text = mpatches.Patch(color='none', label=text)
         handles, labels = axes.get_legend_handles_labels()
-        handles.append(mean)
+        handles.append(text)
         axes.legend(handles=handles, prop={'family': 'monospace'}, **kwargs)
 
     @staticmethod
