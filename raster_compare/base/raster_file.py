@@ -52,8 +52,8 @@ class RasterFile(object):
         if self._extent is None:
             gt = self.geo_transform()
             x_min = gt[0]
-            x_max = gt[0] + self.file.RasterXSize / gt[1]
-            y_min = gt[3] + self.file.RasterYSize / gt[5]
+            x_max = gt[0] + self.file.RasterXSize * gt[1]
+            y_min = gt[3] + self.file.RasterYSize * gt[5]
             y_max = gt[3]
 
             self._extent = x_min, x_max, y_min, y_max
