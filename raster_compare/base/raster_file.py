@@ -6,7 +6,7 @@ from osgeo import gdal, gdalnumeric
 
 class RasterFile(object):
     def __init__(self, filename, band_number):
-        self.file = filename
+        self.file = str(filename)
         self._band_number = band_number
         self._extent = None
         self._hillshade = None
