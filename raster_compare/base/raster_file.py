@@ -60,6 +60,13 @@ class RasterFile(object):
         return self._extent
 
     def band_values(self, **kwargs):
+        """
+        Method to read a specific band from initialized raster.
+        Will mask values defined in the band NoDataValue
+
+        :param kwargs:
+        :return: Numpy masked array
+        """
         raster = kwargs.get('raster', self.file)
         band_number = kwargs.get('band_number', self.band_number)
 
