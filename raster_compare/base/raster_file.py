@@ -59,23 +59,31 @@ class RasterFile(object):
             self._extent = x_min, x_max, y_min, y_max
         return self._extent
 
+    def geo_transform(self):
+        return self.file.GetGeoTransform()
+
     def band_values(self, **kwargs):
         """
-        Method to read a specific band from initialized raster.
-        Will mask values defined in the band NoDataValue
+        Method to read band from arguments or from initialized raster.
+        Will mask values defined in the band NoDataValue and store this mask
+        with the `current_mask` property if the band is the same as the
+        initialized one.
 
         :param kwargs:
+            'band_number': band_number to read instead of the one given with
+                           the initialize call.
+
         :return: Numpy masked array
         """
-        raster = kwargs.get('raster', self.file)
         band_number = kwargs.get('band_number', self.band_number)
 
-        band = raster.GetRasterBand(band_number)
+        band = self.file.GetRasterBand(band_number)
         values = np.ma.masked_values(
             gdalnumeric.BandReadAsArray(band),
-            band.GetNoDataValue() or 0.,
+            band.GetNoDataValue(),
             copy=False
         )
+
         del band
         return values
 
@@ -83,8 +91,16 @@ class RasterFile(object):
         raster = gdal.DEMProcessing(
             '', self.file, attribute, format='MEM', **kwargs
         )
-        raster_values = self.band_values(raster=raster, band_number=1)
+        raster_band = raster.GetRasterBand(1)
+        raster_values = np.ma.masked_values(
+            gdalnumeric.BandReadAsArray(raster_band),
+            raster_band.GetNoDataValue(),
+            copy=False
+        )
+
         del raster
+        del raster_band
+
         return raster_values
 
     @property
@@ -104,9 +120,6 @@ class RasterFile(object):
         if self._aspect is None:
             self._aspect = self.get_raster_attribute('aspect')
         return self._aspect
-
-    def geo_transform(self):
-        return self.file.GetGeoTransform()
 
     def join_masks(self, attribute, other):
         """
