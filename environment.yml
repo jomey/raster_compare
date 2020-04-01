@@ -4,13 +4,15 @@ channels:
   - defaults
 dependencies:
   - cython
-  - gdal=2.4
+  - gdal
   - ipython
   - matplotlib
   - pandas
+  - palettable
   - pillow
   - pip
   - python-pdal
   - statsmodels
   - pip:
       - opencv-python
+      - matplotlib-scalebar
