@@ -17,6 +17,7 @@ setup(
         'numpy',
         'opencv-python',
         'pandas',
+        'palettable',
         'pillow',
         'statsmodels'
     ],
