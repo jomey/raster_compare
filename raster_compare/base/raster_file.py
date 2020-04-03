@@ -10,7 +10,10 @@ class RasterFile(object):
     def __init__(self, filename, band_number):
         self.file = str(filename)
         self._band_number = band_number
+
+        self._geotransform = None
         self._extent = None
+        self._xy_meshgrid = None
 
         self._mad = None
 
@@ -48,19 +51,66 @@ class RasterFile(object):
         return self._mad
 
     @property
+    def geo_transform(self):
+        if self._geotransform is None:
+            self._geotransform = self.file.GetGeoTransform()
+        return self._geotransform
+
+    @property
+    def x_top_left(self):
+        return self.geo_transform[0]
+
+    @property
+    def y_top_left(self):
+        return self.geo_transform[3]
+
+    @property
+    def x_resolution(self):
+        return self.geo_transform[1]
+
+    @property
+    def y_resolution(self):
+        return self.geo_transform[5]
+
+    @property
     def extent(self):
         if self._extent is None:
-            gt = self.geo_transform()
-            x_min = gt[0]
-            x_max = gt[0] + self.file.RasterXSize * gt[1]
-            y_min = gt[3] + self.file.RasterYSize * gt[5]
-            y_max = gt[3]
+            x_bottom_right = \
+                self.x_top_left + self.file.RasterXSize * self.x_resolution
+            y_bottom_right = \
+                self.y_top_left + self.file.RasterYSize * self.y_resolution
 
-            self._extent = x_min, x_max, y_min, y_max
+            self._extent = (
+                self.x_top_left, x_bottom_right,
+                self.y_top_left, y_bottom_right
+            )
         return self._extent
 
-    def geo_transform(self):
-        return self.file.GetGeoTransform()
+    @property
+    def xy_meshgrid(self):
+        """
+        Upper Left coordinate for each cell
+
+        :return: Numpy meshgrid
+        """
+        if self._xy_meshgrid is None:
+            x_size = self.file.RasterXSize
+            y_size = self.file.RasterYSize
+            self._xy_meshgrid = np.meshgrid(
+                np.arange(
+                    self.x_top_left,
+                    self.x_top_left + x_size * self.x_resolution,
+                    self.x_resolution,
+                    dtype=np.float32,
+                ),
+                np.arange(
+                    self.y_top_left,
+                    self.y_top_left + y_size * self.y_resolution,
+                    self.y_resolution,
+                    dtype=np.float32,
+                )
+            )
+        return self._xy_meshgrid
 
     def band_values(self, **kwargs):
         """

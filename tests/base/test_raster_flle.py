@@ -38,10 +38,35 @@ class TestRasterFile(object):
         assert isinstance(subject.mad, MedianAbsoluteDeviation)
 
     def test_geo_transform(self, subject):
-        assert subject.geo_transform() == mock_data.GEO_TRANSFORM
+        assert subject.geo_transform == mock_data.GEO_TRANSFORM
+
+    def test_top_left(self, subject):
+        assert subject.x_top_left == mock_data.GEO_TRANSFORM[0]
+        assert subject.y_top_left == mock_data.GEO_TRANSFORM[3]
+
+    def test_resolution(self, subject):
+        assert subject.x_resolution == mock_data.GEO_TRANSFORM[1]
+        assert subject.y_resolution == mock_data.GEO_TRANSFORM[5]
 
     def test_extent(self, subject):
-        assert subject.extent == (100.0, 103.0, 97.0, 100.0)
+        assert subject.extent == (100.0, 103.0, 100.0, 97.0)
+
+    def test_xy_meshgrid(self, subject):
+        numpy.testing.assert_equal(
+            subject.xy_meshgrid,
+            [
+                numpy.array([
+                    [100., 101., 102.],
+                    [100., 101., 102.],
+                    [100., 101., 102.],
+                ], dtype=numpy.float32),
+                numpy.array([
+                    [100., 100., 100.],
+                    [99., 99., 99.],
+                    [98., 98., 98.],
+                ], dtype=numpy.float32),
+            ]
+        )
 
     def test_band_values(self, subject):
         numpy.testing.assert_equal(

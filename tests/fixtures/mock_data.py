@@ -2,7 +2,7 @@ import numpy
 from osgeo import gdal, gdalnumeric, osr
 
 FILE_NAME = 'test_raster.tif'
-GEO_TRANSFORM = (100, 1., 0., 100, 0., -1.)
+GEO_TRANSFORM = (100., 1., 0., 100., 0., -1.)
 NO_DATA_VALUE = 255
 BAND_VALUES = numpy.array([
     [2, 3, 1],
