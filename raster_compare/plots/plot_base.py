@@ -125,9 +125,9 @@ class PlotBase(object):
     def insert_colorbar(plot, ax, data, label, **kwargs):
         legend = make_axes_locatable(ax)
         cax = legend.append_axes("right", size="5%", pad=0.05)
-        scale_bar = plot.colorbar(data, cax=cax, **kwargs)
-        scale_bar.set_label(label=label, rotation=270)
-        return scale_bar
+        color_bar = plot.colorbar(data, cax=cax, **kwargs)
+        color_bar.set_label(label=label, rotation=270)
+        return color_bar
 
     def print_status(self, message=''):
         status = 'Plotting ' + self.__class__.__name__
