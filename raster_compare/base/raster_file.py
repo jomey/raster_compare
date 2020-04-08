@@ -1,4 +1,5 @@
 import errno
+import functools
 import numpy as np
 import os
 from osgeo import gdal, gdalnumeric
@@ -17,7 +18,6 @@ class RasterFile(object):
 
         self._mad = None
 
-        self._hillshade = None
         self._slope = None
         self._aspect = None
 
@@ -153,11 +153,9 @@ class RasterFile(object):
 
         return raster_values
 
-    @property
-    def hill_shade(self):
-        if self._hillshade is None:
-            self._hillshade = self.get_raster_attribute('hillshade')
-        return self._hillshade
+    @functools.lru_cache(16)
+    def hill_shade(self, **kwargs):
+        return self.get_raster_attribute('hillshade', **kwargs)
 
     @property
     def slope(self):

@@ -76,3 +76,33 @@ class TestRasterFile(object):
 
     def test_band_values_masked(self, subject):
         assert subject.band_values().mask.any()
+
+    def test_get_raster_attribute(self, subject):
+        numpy.testing.assert_equal(
+            subject.get_raster_attribute('hillshade'),
+            numpy.ndarray([])
+        )
+
+    def test_slope(self, subject):
+        numpy.testing.assert_equal(
+            subject.slope,
+            numpy.ndarray([])
+        )
+
+    def test_aspect(self, subject):
+        numpy.testing.assert_equal(
+            subject.aspect,
+            numpy.ndarray([])
+        )
+
+    def test_hillshade(self, subject):
+        numpy.testing.assert_equal(
+            subject.hill_shade(),
+            numpy.ndarray([])
+        )
+
+    def test_hillshade_with_arguments(self, subject):
+        numpy.testing.assert_equal(
+            subject.hill_shade(azimuth=40, altitude=10),
+            numpy.ndarray([])
+        )
