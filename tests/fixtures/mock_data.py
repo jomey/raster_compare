@@ -19,8 +19,8 @@ def raster_file(tmp_input_path):
     file_name = str(tmp_input_path / FILE_NAME)
     output_file = GDAL_DRIVER.Create(
         file_name,
-        BAND_VALUES.shape[0],
         BAND_VALUES.shape[1],
+        BAND_VALUES.shape[0],
         gdal.GDT_Byte
     )
 
