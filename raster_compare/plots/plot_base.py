@@ -122,11 +122,33 @@ class PlotBase(object):
         axes.legend(handles=handles, prop={'family': 'monospace'}, **kwargs)
 
     @staticmethod
-    def insert_colorbar(plot, ax, data, label, **kwargs):
-        legend = make_axes_locatable(ax)
-        cax = legend.append_axes("right", size="5%", pad=0.05)
-        color_bar = plot.colorbar(data, cax=cax, **kwargs)
-        color_bar.set_label(label=label, rotation=270)
+    def insert_colorbar(axes, data, label, **kwargs):
+        """
+        Insert color bar to given figure.
+        If the kwargs contains the 'right' parameter, the method adjusts to a
+        different logic for adding a color bar axes.
+
+        :param axes: Axes to append to
+        :param data: Data to plot the colorbar for
+        :param label: Label for the colorbar
+        :param kwargs: Any arguments a colorbar would accept
+            For single axes, the 'pad' parameter can adjust spacing between
+            For multiple axes, two parameters are **required**
+                'right': percentage to adjust the figure for axes
+                'rect': the dimensions for axes [left, bottom, width, height]
+        :return: Inserted color bar
+        """
+        figure = axes.get_figure()
+        if 'right' not in kwargs:
+            legend = make_axes_locatable(axes)
+            padding = kwargs.pop('pad', 0.1)
+            cax = legend.append_axes("right", size="5%", pad=padding)
+        else:
+            figure.subplots_adjust(right=kwargs.pop('right'))
+            cax = figure.add_axes(kwargs.pop('rect'))
+
+        color_bar = figure.colorbar(data, cax=cax, **kwargs)
+        color_bar.set_label(label=label, rotation=kwargs.pop('rotation', 270))
         return color_bar
 
     def print_status(self, message=''):

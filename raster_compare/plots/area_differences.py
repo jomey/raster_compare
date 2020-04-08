@@ -93,7 +93,7 @@ class AreaDifferences(PlotBase):
         )
         ax1.set_title(self.TITLE.format(self.data_description))
         self.insert_colorbar(
-            plt, ax1, diff_plot, self.SCALE_BAR_LABEL[self.data_description]
+            ax1, diff_plot, self.SCALE_BAR_LABEL[self.data_description]
         )
 
         difference = difference[np.isfinite(difference)].compressed()

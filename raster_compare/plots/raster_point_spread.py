@@ -54,7 +54,7 @@ class RasterPointSpread(PlotBase):
         )
         ax1.set_title(self.PLOT_TITLE)
         self.insert_colorbar(
-            plt, ax1, diff, self.SCALE_BAR_LABEL['Elevation'],
+            ax1, diff, self.SCALE_BAR_LABEL['Elevation'],
             # boundaries=bounds[7::], # Limit displayed value range
             # ticks=bounds[1::2], # Adapt tick marks
         )
