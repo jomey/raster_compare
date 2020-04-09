@@ -7,8 +7,10 @@ dependencies:
   - gdal
   - ipython
   - matplotlib
-  - pandas
+  - numba
+  - numexpr
   - palettable
+  - pandas
   - pillow
   - pip
   - python-pdal
