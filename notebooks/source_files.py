@@ -15,6 +15,11 @@ NSIDC_DIR = HOME_DIR / 'ERW_20180524/NSIDC'
 ORTHO_IMAGE = HOME_DIR / 'ERW_20180524_Agisoft_rgb_5m_ortho.tif'
 DEM_SNOW_FREE = SNOW_DEPTH_DIR / '20180912_Lidar_dem_3m_ERW_basin.tif'
 
+# ** NOTE **
+# All source files were masked to only ERW watershed boundaries.
+# See extended_source_files.py for additional analytical resources.
+##
+
 ###
 # ASO data
 ###
