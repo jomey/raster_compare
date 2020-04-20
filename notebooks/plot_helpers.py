@@ -19,6 +19,9 @@ COLORMAP = PlotColor.mpl_colormap
 BOX_PLOT_TEXT = '{0:8}: {1:6.3f}'
 LEGEND_TEXT = "{0:8}: {1:7.2f}"
 
+ELEVATION_LABEL = 'Elevation (m)'
+SNOW_DEPTH_LABEL = 'Snow Depth (m)'
+
 
 def side_by_side_plot(difference, extent, ortho_image, hillshade=None):
     bin_steps = 5 * 0.01
@@ -55,7 +58,7 @@ def side_by_side_plot(difference, extent, ortho_image, hillshade=None):
     )
     cbar = PlotBase.insert_colorbar(
         ax1, diff_plot,
-        'Snow Depth [m]',
+        SNOW_DEPTH_LABEL,
         ticks=[-1.5, -1, -0.5, 0, 0.5, 1, 1.5],
     )
     cbar.ax.set_yticklabels(
@@ -168,7 +171,7 @@ def plot_histogram(data, tick_range, **kwargs):
         ]))
 
     ax.ticklabel_format(style='sci', axis='y', scilimits=(4, 4))
-    ax.set_xlabel("Snow Depth (m)")
+    ax.set_xlabel(SNOW_DEPTH_LABEL)
     ax.set_ylabel("Count $(10^4)$")
     ax.yaxis.get_offset_text().set_visible(False)
     ax.axvline(x=0, color='black', linewidth=2)
