@@ -131,7 +131,7 @@ class PlotBase(object):
         :param axes: Axes to append to
         :param data: Data to plot the colorbar for
         :param label: Label for the colorbar
-        :param kwargs: Any arguments a colorbar would accept
+        :param kwargs: Any arguments a colorbar and it's label would accept
             For single axes, the 'pad' parameter can adjust spacing between
             For multiple axes, two parameters are **required**
                 'right': percentage to adjust the figure for axes
@@ -148,7 +148,11 @@ class PlotBase(object):
             cax = figure.add_axes(kwargs.pop('rect'))
 
         color_bar = figure.colorbar(data, cax=cax, **kwargs)
-        color_bar.set_label(label=label, rotation=kwargs.pop('rotation', 270))
+        color_bar.set_label(
+            label=label,
+            rotation=kwargs.pop('rotation', 270),
+            labelpad=kwargs.pop('labelpad', 10)
+        )
         return color_bar
 
     def print_status(self, message=''):
