@@ -155,6 +155,28 @@ class PlotBase(object):
         )
         return color_bar
 
+    @staticmethod
+    def format_axes_scientific(axes, which, limits, **labelargs):
+        """
+        :param axes: Axes to change
+        :param which: 'x' or 'y' axes
+        :param limits: (m, n), range 10m to 10n
+        :param labelargs: optional arguments to change label style
+        :return:
+        """
+        axes.ticklabel_format(style='scientific', axis=which, scilimits=limits)
+        axes.set_ylabel(
+            f"Count $(10^{limits[1]})$",
+            rotation=labelargs.pop('rotation', 270),
+            labelpad=labelargs.pop('labelpad', 18)
+        )
+        axes.yaxis.get_offset_text().set_visible(False)
+
+    @staticmethod
+    def move_yaxis_label_right(ax):
+        ax.yaxis.set_label_position("right")
+        ax.yaxis.tick_right()
+
     def print_status(self, message=''):
         status = 'Plotting ' + self.__class__.__name__
 
