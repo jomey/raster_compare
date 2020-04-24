@@ -14,11 +14,13 @@ setup(
     install_requires=[
         'gdal',
         'matplotlib',
+        'numba',
         'numpy',
         'opencv-python',
-        'pandas',
         'palettable',
+        'pandas',
         'pillow',
+        'scipy',
         'statsmodels'
     ],
     extras_require={
