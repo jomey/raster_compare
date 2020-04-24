@@ -20,11 +20,18 @@ dem_values = dem.band_values()
 hillshade_snow_on = dem.hill_shade(**HILLSHADE_SNOW_ON)
 hillshade_snow_free = dem.hill_shade(**HILLSHADE_SNOW_FREE)
 
-for values in [sfm_snow_free_values, sfm_snow_on_values,
-               sd_difference_values, dem_values]:
-    np.ma.masked_where(aso_snow_depth_values.mask, values, copy=False)
-
 assert aso_snow_depth.geo_transform == dem.geo_transform
 assert aso_snow_depth.geo_transform == \
        sfm_snow_free.geo_transform == \
        sfm_snow_on.geo_transform
+
+
+def mask_to_snow_depth():
+    
+    for values in [
+        sfm_snow_free_values, 
+        sfm_snow_on_values,
+        sd_difference_values, 
+        dem_values
+    ]:
+        np.ma.masked_where(aso_snow_depth_values.mask, values, copy=False)
