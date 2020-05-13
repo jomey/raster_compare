@@ -13,7 +13,7 @@ LIDAR_DIR = HOME_DIR / 'ERW_20180524/Lidar'
 NSIDC_DIR = HOME_DIR / 'ERW_20180524/NSIDC'
 
 ORTHO_IMAGE = HOME_DIR / 'ERW_20180524_Agisoft_rgb_5m_ortho.tif'
-DEM_SNOW_FREE = SNOW_DEPTH_DIR / '20180912_Lidar_dem_3m_ERW_basin.tif'
+DEM_SNOW_FREE = SNOW_DEPTH_DIR / '20180912_Lidar_ERW_basin_dsm_3m.tif'
 
 # ** NOTE **
 # All source files were masked to only ERW watershed boundaries.
@@ -39,7 +39,7 @@ np.ma.masked_where(
 # SfM data
 ###
 sfm_snow_depth = RasterFile(
-    SNOW_DEPTH_DIR / '20180524_Agisoft_snow_depth_ERW_basin.tif',
+    SNOW_DEPTH_DIR / '20180524_Agisoft_snow_depth_3m.tif',
     band_number=1
 )
 sfm_snow_depth_values = sfm_snow_depth.band_values()
@@ -49,8 +49,8 @@ np.ma.masked_where(
     copy=False
 )
 
-SFM_SNOW_FREE = SNOW_DEPTH_DIR / '20180912_Agisoft_dsm_ERW_basin.tif'
-SFM_SNOW_ON = SNOW_DEPTH_DIR / '20180524_Agisoft_dsm_ERW_basin.tif'
+SFM_SNOW_FREE = SNOW_DEPTH_DIR / '20180912_Agisoft_ERW_basin_dsm_3m.tif'
+SFM_SNOW_ON = SNOW_DEPTH_DIR / '20180524_Agisoft_ERW_basin_dsm_3m.tif'
 
 ###
 # Classification
@@ -76,8 +76,8 @@ np.ma.masked_where(
     copy=False
 )
 
-STABLE_GROUND = CASI_DIR / \
-                'ERW_20180524_stable_no_snow_depth_only_return_ERW_basin.tif'
+STABLE_GROUND = HOME_DIR / 'ERW_20180524/Stable_Ground' / \
+                'ERW_20180524_NoR_FS_no_snow_3m.tif'
 
 # Validation for same extent
 assert aso_snow_depth.geo_transform == \
