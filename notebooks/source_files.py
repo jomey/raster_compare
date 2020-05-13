@@ -8,11 +8,7 @@ HOME_DIR = PurePath('/Volumes/warehouse/projects/UofU/ASO/ERW')
 
 SNOW_DEPTH_DIR = HOME_DIR / 'snow_depth'
 
-CASI_DIR = HOME_DIR / 'ERW_20180524/CASI'
-LIDAR_DIR = HOME_DIR / 'ERW_20180524/Lidar'
-NSIDC_DIR = HOME_DIR / 'ERW_20180524/NSIDC'
-
-ORTHO_IMAGE = HOME_DIR / 'ERW_20180524_Agisoft_rgb_5m_ortho.tif'
+ORTHO_IMAGE = HOME_DIR / 'Orthomosaic/ERW_20180524_Agisoft_rgb_5m_ortho.tif'
 DEM_SNOW_FREE = SNOW_DEPTH_DIR / '20180912_Lidar_ERW_basin_dsm_3m.tif'
 
 # ** NOTE **
@@ -24,7 +20,7 @@ DEM_SNOW_FREE = SNOW_DEPTH_DIR / '20180912_Lidar_ERW_basin_dsm_3m.tif'
 # ASO data
 ###
 aso_snow_depth = RasterFile(
-    NSIDC_DIR / 'ASO_3M_SD_USCOGE_20180524_ERW_basin.tif',
+    SNOW_DEPTH_DIR / '20180524_ASO_snow_depth_3m.tif',
     band_number=1
 )
 aso_snow_depth_values = aso_snow_depth.band_values()
@@ -65,8 +61,7 @@ CASI_MAPPING = [ 0., 1., 2., 3., np.inf]
 CASI_CLASSES = ['Snow', 'Vegetation', 'Rock', 'Water']
 
 casi_classifier = RasterFile(
-    CASI_DIR /
-    'CASI_2018_05_24_weekly_mosaic_classified_lidargrid_3m_ERW_basin.tif',
+    SNOW_DEPTH_DIR / '20180524_ASO_CASI_ERW_basin_3m.tif',
     band_number=1
 )
 casi_classification = casi_classifier.band_values()
@@ -76,8 +71,7 @@ np.ma.masked_where(
     copy=False
 )
 
-STABLE_GROUND = HOME_DIR / 'ERW_20180524/Stable_Ground' / \
-                'ERW_20180524_NoR_FS_no_snow_3m.tif'
+STABLE_GROUND = SNOW_DEPTH_DIR / 'ERW_20180524_NoR_FS_no_snow_3m.tif'
 
 # Validation for same extent
 assert aso_snow_depth.geo_transform == \
