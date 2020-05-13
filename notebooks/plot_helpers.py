@@ -1,5 +1,6 @@
 import matplotlib
 import matplotlib.colors as colors
+import matplotlib.lines as mlines
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib_scalebar.scalebar import ScaleBar
