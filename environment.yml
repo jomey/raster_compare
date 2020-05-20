@@ -6,6 +6,7 @@ dependencies:
   - cython
   - gdal
   - ipython
+  - jinja2
   - matplotlib
   - numba
   - numexpr
