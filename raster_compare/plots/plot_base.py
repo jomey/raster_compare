@@ -116,8 +116,19 @@ class PlotBase(object):
 
     @staticmethod
     def add_to_legend(axes, text, **kwargs):
+        """
+        Add a legend to the right of the given axes.
+
+        :param axes: Axes to insert legend box
+        :param text: String - Text to add to the legend box
+        :param kwargs:
+            handles: Additional legend entry as Patch object
+                     mpatches.Patch(color='red', label='The red data')
+        """
         text = mpatches.Patch(color='none', label=text)
         handles, labels = axes.get_legend_handles_labels()
+        if 'handles' in kwargs:
+            handles.append(kwargs.pop('handles'))
         handles.append(text)
         axes.legend(handles=handles, prop={'family': 'monospace'}, **kwargs)
 
