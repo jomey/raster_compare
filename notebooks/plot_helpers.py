@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib_scalebar.scalebar import ScaleBar
 from palettable.colorbrewer.diverging import RdBu_5 as PlotColor
+from contextlib import contextmanager
 
 from raster_compare.plots import PlotBase
 
@@ -152,6 +153,7 @@ def add_to_histogram(ax, data, label='', color='dodgerblue'):
     return data, data_mean
 
 
+@contextmanager
 def plot_histogram(data, tick_range, **kwargs):
     figure = plt.figure(**kwargs)
     ax = figure.add_subplot(111)
@@ -178,6 +180,8 @@ def plot_histogram(data, tick_range, **kwargs):
     ax.axvline(x=0, color='black', linewidth=2)
     ax.set_xlim(tick_range[0], tick_range[1])
     ax.set_xticks(np.arange(tick_range[0], tick_range[1] + 1))
+
+    yield ax
 
     text = "\n".join(text)
     PlotBase.add_to_legend(
