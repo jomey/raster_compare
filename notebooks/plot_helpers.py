@@ -1,6 +1,7 @@
 import matplotlib
 import matplotlib.colors as colors
 import matplotlib.lines as mlines
+import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib_scalebar.scalebar import ScaleBar
@@ -148,7 +149,6 @@ def add_to_histogram(ax, data, label='', color='dodgerblue'):
 
     ax.hist(data, bins=bins, color=color, label=label, alpha=0.8)
     ax.axvline(x=data_mean, color='darkorange', linewidth=2)
-    # ax.annotate(label, (data_mean + .05, 10e4))
 
     return data, data_mean
 
@@ -187,6 +187,7 @@ def plot_histogram(data, tick_range, **kwargs):
     PlotBase.add_to_legend(
         ax,
         text,
+        handles=mpatches.Patch(color='darkorange', label='Mean'),
         loc='center left',
         bbox_to_anchor=(1, 0.5),
     )
