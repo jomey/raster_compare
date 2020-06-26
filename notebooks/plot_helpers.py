@@ -3,8 +3,13 @@ import matplotlib.colors as colors
 import matplotlib.lines as mlines
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
+
 import numpy as np
+
+from matplotlib.gridspec import GridSpec
 from matplotlib_scalebar.scalebar import ScaleBar
+from matplotlib.ticker import MultipleLocator
+
 from palettable.colorbrewer.diverging import RdBu_5 as PlotColor
 from contextlib import contextmanager
 
@@ -14,7 +19,7 @@ matplotlib.rcParams['axes.titlesize'] = 14
 matplotlib.rcParams['axes.labelsize'] = 14
 matplotlib.rcParams['legend.fontsize'] = 14
 matplotlib.rcParams['figure.titlesize'] = 16
-matplotlib.rcParams['figure.facecolor'] = 'f0f0f0'
+matplotlib.rcParams['figure.facecolor'] = 'ffffff'
 matplotlib.rcParams['figure.subplot.wspace'] = 0.05
 matplotlib.rcParams['figure.subplot.top'] = 0.92
 
@@ -173,10 +178,8 @@ def plot_histogram(data, tick_range, **kwargs):
             "{0:8}: {1}".format(" Count", values.size),
         ]))
 
-    ax.ticklabel_format(style='sci', axis='y', scilimits=(4, 4))
     ax.set_xlabel(SNOW_DEPTH_LABEL)
-    ax.set_ylabel("Count $(10^4)$")
-    ax.yaxis.get_offset_text().set_visible(False)
+    PlotBase.format_axes_scientific(ax, 'y', (4, 4))
     ax.axvline(x=0, color='black', linewidth=2)
     ax.set_xlim(tick_range[0], tick_range[1])
     ax.set_xticks(np.arange(tick_range[0], tick_range[1] + 1))
@@ -187,7 +190,7 @@ def plot_histogram(data, tick_range, **kwargs):
     PlotBase.add_to_legend(
         ax,
         text,
-        handles=mpatches.Patch(color='darkorange', label='Mean'),
+        handles=mlines.Line2D([], [], color='darkorange', label='Mean'),
         loc='center left',
         bbox_to_anchor=(1, 0.5),
     )
