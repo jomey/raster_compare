@@ -158,11 +158,14 @@ class PlotBase(object):
             figure.subplots_adjust(right=kwargs.pop('right'))
             cax = figure.add_axes(kwargs.pop('rect'))
 
+        rotation = kwargs.pop('rotation', 270)
+        labelpad = kwargs.pop('labelpad', 10)
+
         color_bar = figure.colorbar(data, cax=cax, **kwargs)
         color_bar.set_label(
             label=label,
-            rotation=kwargs.pop('rotation', 270),
-            labelpad=kwargs.pop('labelpad', 10)
+            rotation=rotation,
+            labelpad=labelpad,
         )
         return color_bar
 
