@@ -140,59 +140,75 @@ def make_box_plot(data, label):
     return ax
 
 
-def add_to_histogram(ax, data, label='', color='dodgerblue'):
-    data = data[np.isfinite(data)].compressed()
-    data_min = np.nanmin(data)
-    data_max = np.nanmax(data)
-    data_mean = np.nanmean(data)
+class Histogram(object):
+    MEAN_LINE_STYLE = dict(linestyle='dashed', color='dimgrey')
 
-    bins = np.arange(
-        min(0., float(data_min)),
-        data_max + .01,
-        .01
-    )
+    @classmethod
+    def add_to_plot(cls, ax, **dataset):
+        data = dataset.pop('data')
+        data = data[np.isfinite(data)].compressed()
+        data_min = np.nanmin(data)
+        data_max = np.nanmax(data)
+        data_mean = np.nanmean(data)
 
-    ax.hist(data, bins=bins, color=color, label=label, alpha=0.8)
-    ax.axvline(x=data_mean, color='darkorange', linewidth=2)
-
-    return data, data_mean
-
-
-@contextmanager
-def plot_histogram(data, tick_range, **kwargs):
-    figure = plt.figure(**kwargs)
-    ax = figure.add_subplot(111)
-
-    text = []
-
-    for dataset in data:
-        values, data_mean = add_to_histogram(
-            ax, dataset['data'], dataset['label'], dataset['color']
+        bins = np.arange(
+            min(0., float(data_min)),
+            data_max + .01,
+            .01
         )
-        if len(data) > 1:
-            text.append(dataset['label'])
-        text.append("\n".join([
-            LEGEND_TEXT.format(" Mean", data_mean),
-            LEGEND_TEXT.format(" Median", np.nanmedian(values)),
-            LEGEND_TEXT.format(" Std", np.nanstd(values)),
-            "{0:8}: {1}".format(" Count", values.size),
-        ]))
 
-    ax.set_xlabel(SNOW_DEPTH_LABEL)
-    PlotBase.format_axes_scientific(ax, 'y', (4, 4))
-    ax.axvline(x=0, color='black', linewidth=2)
-    ax.set_xlim(tick_range[0], tick_range[1])
-    ax.set_xticks(np.arange(tick_range[0], tick_range[1] + 1))
+        color = dataset.pop('color', 'dodgerblue')
+        ax.hist(
+            data,
+            bins=bins,
+            label=dataset.pop('label', ''),
+            histtype='stepfilled',
+            color=color,
+            alpha=dataset.pop('alpha', 0.8),
+            ec='k',
+        )
+        ax.axvline(x=data_mean, linewidth=2, **cls.MEAN_LINE_STYLE)
 
-    yield ax
+        return data, data_mean
 
-    text = "\n".join(text)
-    PlotBase.add_to_legend(
-        ax,
-        text,
-        handles=mlines.Line2D([], [], color='darkorange', label='Mean'),
-        loc='center left',
-        bbox_to_anchor=(1, 0.5),
-    )
+    @classmethod
+    @contextmanager
+    def plot(cls, dataset, tick_range, **kwargs):
+        figure = plt.figure(**kwargs)
+        ax = figure.add_subplot(111)
 
-    return ax
+        text = []
+
+        for data in dataset:
+            values, data_mean = cls.add_to_plot(ax, **data)
+
+            if len(dataset) > 1 and 'label' in data:
+                text.append(data['label'])
+
+            text.append("\n".join([
+                LEGEND_TEXT.format(" Mean", data_mean),
+                LEGEND_TEXT.format(" Median", np.nanmedian(values)),
+                LEGEND_TEXT.format(" Std", np.nanstd(values)),
+                "{0:8}: {1}".format(" Count", values.size),
+            ]))
+
+        ax.set_xlabel(SNOW_DEPTH_LABEL)
+        PlotBase.format_axes_scientific(ax, 'y', (4, 4))
+        ax.axvline(x=0, color='black', linewidth=2)
+        ax.set_xlim(tick_range[0], tick_range[1])
+        ax.set_xticks(np.arange(tick_range[0], tick_range[1] + 1))
+
+        yield ax
+
+        text = "\n".join(text)
+        PlotBase.add_to_legend(
+            ax,
+            text,
+            handles=mlines.Line2D(
+                [], [], label='Mean', **cls.MEAN_LINE_STYLE
+            ),
+            loc='center left',
+            bbox_to_anchor=(1, 0.5),
+        )
+
+        return ax
