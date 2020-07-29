@@ -10,7 +10,10 @@ from matplotlib.gridspec import GridSpec
 from matplotlib_scalebar.scalebar import ScaleBar
 from matplotlib.ticker import MultipleLocator
 
-from palettable.colorbrewer.diverging import RdBu_5 as PlotColor
+from palettable.scientific.sequential import LaJolla_20 as Hist2dColor
+from palettable.colorbrewer.diverging import RdBu_5 as RedBlueCmap
+from palettable.colorbrewer.sequential import Blues_9 as BlueCmap
+
 from contextlib import contextmanager
 
 from raster_compare.plots import PlotBase
@@ -23,7 +26,10 @@ matplotlib.rcParams['figure.facecolor'] = 'ffffff'
 matplotlib.rcParams['figure.subplot.wspace'] = 0.05
 matplotlib.rcParams['figure.subplot.top'] = 0.92
 
-COLORMAP = PlotColor.mpl_colormap
+HIST_2D_CMAP = Hist2dColor.mpl_colormap
+RED_BLUE_CMAP = RedBlueCmap.mpl_colormap
+BLUE_CMAP = BlueCmap.mpl_colormap
+
 BOX_PLOT_TEXT = '{0:8}: {1:6.3f}'
 LEGEND_TEXT = "{0:8}: {1:7.2f}"
 
@@ -35,7 +41,7 @@ def side_by_side_plot(difference, extent, ortho_image, hillshade=None):
     bin_steps = 5 * 0.01
     bins = np.arange(-1.50, 1.50 + bin_steps, step=bin_steps)
     bounds = dict(
-        norm=colors.BoundaryNorm(boundaries=bins, ncolors=COLORMAP.N)
+        norm=colors.BoundaryNorm(boundaries=bins, ncolors=RED_BLUE_CMAP.N)
     )
 
     figure = plt.figure(
@@ -60,7 +66,7 @@ def side_by_side_plot(difference, extent, ortho_image, hillshade=None):
 
     diff_plot = ax1.imshow(
         difference,
-        cmap=COLORMAP,
+        cmap=RED_BLUE_CMAP,
         extent=extent,
         **bounds
     )
