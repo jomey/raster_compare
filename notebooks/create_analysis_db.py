@@ -1,6 +1,7 @@
 import pandas as pd
 
-from source_files_extended import *
+from .source_files import DB_CONNECTION
+from .source_files_extended import *
 
 sfm_snow_free_values, sfm_snow_on_values, dem_values = load_elevations()
 
@@ -35,9 +36,3 @@ df.to_sql(
     if_exists='replace',
     chunksize=100000
 )
-
-# Index expermiment
-# cursor = DB_CONNECTION.cursor()
-# cursor.execute('CREATE INDEX sfm_depth_index ON ERW_analysis (sfm_snow_depth)')
-# cursor.execute('CREATE INDEX casi_class_index ON ERW_analysis (casi_class)')
-# DB_CONNECTION.commit()

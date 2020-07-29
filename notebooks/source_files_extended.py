@@ -1,6 +1,7 @@
 import numpy as np
 
-from source_files import aso_snow_depth, sfm_snow_depth, SNOW_DEPTH_DIR
+from .source_files import aso_snow_depth, sfm_snow_depth, \
+    SNOW_DEPTH_DIR, HILLSHADE_SNOW_FREE, HILLSHADE_SNOW_ON
 from raster_compare.base import RasterFile
 
 # ** NOTE **
@@ -113,4 +114,3 @@ def elevation_spread(raster):
     max_elevation = raster.band_values(band_number=2)
     np.ma.masked_where(aso_snow_depth_values.mask, max_elevation, copy=False)
     return max_elevation - min_elevation
-
