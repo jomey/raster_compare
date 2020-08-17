@@ -116,18 +116,80 @@ class PlotBase(object):
 
     @staticmethod
     def add_to_legend(axes, text, **kwargs):
-        mean = mpatches.Patch(color='none', label=text)
+        """
+        Add a legend to the right of the given axes.
+
+        :param axes: Axes to insert legend box
+        :param text: String - Text to add to the legend box
+        :param kwargs:
+            handles: Additional legend entry as Patch object
+                     mpatches.Patch(color='red', label='The red data')
+        """
+        text = mpatches.Patch(color='none', label=text)
         handles, labels = axes.get_legend_handles_labels()
-        handles.append(mean)
+        if 'handles' in kwargs:
+            handles.append(kwargs.pop('handles'))
+        handles.append(text)
         axes.legend(handles=handles, prop={'family': 'monospace'}, **kwargs)
 
     @staticmethod
-    def insert_colorbar(plot, ax, data, label, **kwargs):
-        legend = make_axes_locatable(ax)
-        cax = legend.append_axes("right", size="5%", pad=0.05)
-        scale_bar = plot.colorbar(data, cax=cax, **kwargs)
-        scale_bar.set_label(label=label)
-        return scale_bar
+    def insert_colorbar(axes, data, label, **kwargs):
+        """
+        Insert color bar to given figure.
+        If the kwargs contains the 'right' parameter, the method adjusts to a
+        different logic for adding a color bar axes.
+
+        :param axes: Axes to append to
+        :param data: Data to plot the colorbar for
+        :param label: Label for the colorbar
+        :param kwargs: Any arguments a colorbar and it's label would accept
+            For single axes, the 'pad' parameter can adjust spacing between
+            For multiple axes, two parameters are **required**
+                'right': percentage to adjust the figure for axes
+                'rect': the dimensions for axes [left, bottom, width, height]
+        :return: Inserted color bar
+        """
+        figure = axes.get_figure()
+        if 'right' not in kwargs:
+            legend = make_axes_locatable(axes)
+            padding = kwargs.pop('pad', 0.1)
+            cax = legend.append_axes("right", size="5%", pad=padding)
+        else:
+            figure.subplots_adjust(right=kwargs.pop('right'))
+            cax = figure.add_axes(kwargs.pop('rect'))
+
+        rotation = kwargs.pop('rotation', 270)
+        labelpad = kwargs.pop('labelpad', 10)
+
+        color_bar = figure.colorbar(data, cax=cax, **kwargs)
+        color_bar.set_label(
+            label=label,
+            rotation=rotation,
+            labelpad=labelpad,
+        )
+        return color_bar
+
+    @staticmethod
+    def format_axes_scientific(axes, which, limits, **labelargs):
+        """
+        :param axes: Axes to change
+        :param which: 'x' or 'y' axes
+        :param limits: (m, n), range 10m to 10n
+        :param labelargs: optional arguments to change label style
+        :return:
+        """
+        axes.ticklabel_format(style='scientific', axis=which, scilimits=limits)
+        axes.set_ylabel(
+            f"Count $(10^{limits[1]})$",
+            rotation=labelargs.pop('rotation', 270),
+            labelpad=labelargs.pop('labelpad', 18)
+        )
+        axes.yaxis.get_offset_text().set_visible(False)
+
+    @staticmethod
+    def move_yaxis_label_right(ax):
+        ax.yaxis.set_label_position("right")
+        ax.yaxis.tick_right()
 
     def print_status(self, message=''):
         status = 'Plotting ' + self.__class__.__name__

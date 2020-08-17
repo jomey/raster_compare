@@ -1,7 +1,7 @@
 import functools
-import math
 
 import numpy as np
+import numba
 
 from scipy.stats import norm
 
@@ -34,16 +34,21 @@ class MedianAbsoluteDeviation(object):
     def standard_deviation(self, width=1, absolute=False):
         return self.percentile(self.STANDARD_DEVIATIONS[width], absolute)
 
-    def absolute_difference(self, a):
-        return math.fabs(a - self.data_median)
+    @staticmethod
+    @numba.jit(nopython=True, parallel=True)
+    def absolute_difference(a, median):
+        return np.fabs(a - median)
 
     @functools.lru_cache(1)
     def normalized(self):
         """
         NMAD from Höhle & Höhle, 2009
+          NMAD = 1.4826 · median_j(|􏰀h_j − m􏰀_h |)
         """
-        absolute_difference = np.vectorize(self.absolute_difference)
-        return self.NMAD_CONSTANT * np.median(absolute_difference(self.data))
+        absolute_difference = self.absolute_difference(
+            self.data, self.data_median
+        )
+        return self.NMAD_CONSTANT * np.median(absolute_difference)
 
     @functools.lru_cache(16)
     def percentile(self, percent, absolute=False):

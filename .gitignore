@@ -1,5 +1,4 @@
 # Distribution / packaging
-/bin/
 build/
 develop-eggs/
 dist/
@@ -12,3 +11,6 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
+
+# Pytest
+tests/tmp/**/*

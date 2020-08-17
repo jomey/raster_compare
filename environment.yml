@@ -4,9 +4,13 @@ channels:
   - defaults
 dependencies:
   - cython
-  - gdal=2.4
+  - gdal
   - ipython
+  - jinja2
   - matplotlib
+  - numba
+  - numexpr
+  - palettable
   - pandas
   - pillow
   - pip
@@ -14,3 +18,4 @@ dependencies:
   - statsmodels
   - pip:
       - opencv-python
+      - matplotlib-scalebar
