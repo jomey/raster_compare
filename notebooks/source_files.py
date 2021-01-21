@@ -15,19 +15,8 @@ ORTHO_IMAGE = HOME_DIR / 'Orthomosaic/ERW_20180524_Agisoft_rgb_5m_ortho.tif'
 
 DB_CONNECTION = sql.connect(HOME_DIR / "erw_analysis.db")
 
-HILLSHADE_SNOW_ON = dict(azimuth=100, altitude=47)
+HILLSHADE_SNOW_ON = dict(azimuth=101, altitude=47)
 HILLSHADE_SNOW_FREE = dict(azimuth=247, altitude=32)
-
-aso_snow_depth = RasterFile(
-    SNOW_DEPTH_DIR / '20180524_ASO_snow_depth_1m.tif',
-    band_number=1
-)
-
-sfm_snow_depth = RasterFile(
-    SNOW_DEPTH_DIR / '20180524_Agisoft_snow_depth_1m.tif',
-    band_number=1
-)
-
 
 def db_query_to_df(query=None):
     if not query:

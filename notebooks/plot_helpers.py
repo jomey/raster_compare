@@ -3,6 +3,7 @@ import matplotlib.colors as colors
 import matplotlib.lines as mlines
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
+import matplotlib.font_manager as font_manager
 
 import numpy as np
 
@@ -18,20 +19,25 @@ from contextlib import contextmanager
 
 from raster_compare.plots import PlotBase
 
-matplotlib.rcParams['axes.titlesize'] = 14
-matplotlib.rcParams['axes.labelsize'] = 14
-matplotlib.rcParams['legend.fontsize'] = 14
+LABEL_SIZE = 11
+
+matplotlib.rcParams['axes.titlesize'] = LABEL_SIZE + 1
+matplotlib.rcParams['axes.labelsize'] = LABEL_SIZE
+matplotlib.rcParams['xtick.labelsize'] = LABEL_SIZE - 1
+matplotlib.rcParams['ytick.labelsize'] = LABEL_SIZE - 1
+matplotlib.rcParams['legend.fontsize'] = LABEL_SIZE + 1
 matplotlib.rcParams['figure.titlesize'] = 16
 matplotlib.rcParams['figure.facecolor'] = 'ffffff'
 matplotlib.rcParams['figure.subplot.wspace'] = 0.05
-matplotlib.rcParams['figure.subplot.top'] = 0.92
+matplotlib.rcParams['figure.subplot.top'] = 0.875
+matplotlib.rcParams['figure.dpi'] = 300
 
 HIST_2D_CMAP = Hist2dColor.mpl_colormap
 RED_BLUE_CMAP = RedBlueCmap.mpl_colormap
 BLUE_CMAP = BlueCmap.mpl_colormap
 
-BOX_PLOT_TEXT = '{0:8}: {1:6.3f}'
-LEGEND_TEXT = "{0:8}: {1:7.2f}"
+BOX_PLOT_TEXT = '{0:8}: {1:6.2f} {2}'
+LEGEND_TEXT = "{0:8}: {1:7.2f} {2}"
 
 ELEVATION_LABEL = 'Elevation (m)'
 SNOW_DEPTH_LABEL = 'Snow Depth (m)'
@@ -111,7 +117,7 @@ def set_axes_style(axes):
 def make_box_plot(data, label):
     data = data[np.isfinite(data)].compressed()
 
-    figure = plt.figure(figsize=(6, 6), constrained_layout=False)
+    figure = plt.figure(figsize=(8, 5), constrained_layout=False)
     ax = figure.add_subplot(111)
 
     box_plot = plt.boxplot(
@@ -131,7 +137,7 @@ def make_box_plot(data, label):
 
     text = [
         BOX_PLOT_TEXT.format(
-            'Median', box_plot['medians'][0].get_ydata()[0]
+            'Median', box_plot['medians'][0].get_ydata()[0], 'm'
         ),
     ]
     PlotBase.add_to_legend(
@@ -170,10 +176,12 @@ class Histogram(object):
             label=dataset.pop('label', ''),
             histtype='stepfilled',
             color=color,
-            alpha=dataset.pop('alpha', 0.8),
+            alpha=dataset.pop('alpha', 0.6),
             ec='k',
         )
-        ax.axvline(x=data_mean, linewidth=2, **cls.MEAN_LINE_STYLE)
+
+        if 'skip_mean' not in dataset:
+            ax.axvline(x=data_mean, linewidth=2, **cls.MEAN_LINE_STYLE)
 
         return data, data_mean
 
@@ -184,37 +192,47 @@ class Histogram(object):
         ax = figure.add_subplot(111)
 
         text = []
+        has_mean = True
 
         for data in dataset:
             values, data_mean = cls.add_to_plot(ax, **data)
 
+            if 'skip_mean' in data:
+                has_mean = False
+
             if len(dataset) > 1 and 'label' in data:
                 text.append(data['label'])
 
-            text.append("\n".join([
-                LEGEND_TEXT.format(" Mean", data_mean),
-                LEGEND_TEXT.format(" Median", np.nanmedian(values)),
-                LEGEND_TEXT.format(" Std", np.nanstd(values)),
-                "{0:8}: {1}".format(" Count", values.size),
-            ]))
+            text.append(LEGEND_TEXT.format(" Mean", data_mean, 'm'))
+            text.append(LEGEND_TEXT.format(" Std", np.nanstd(values), 'm'))
+            text.append(LEGEND_TEXT.format(" Median", np.nanmedian(values), 'm'))
+            if 'legend' in data:
+                text.append(data['legend'])
 
         ax.set_xlabel(SNOW_DEPTH_LABEL)
-        PlotBase.format_axes_scientific(ax, 'y', (4, 4))
+        PlotBase.format_axes_scientific(ax, 'y', (4, 4), rotation=90, labelpad=2, fontsize=LABEL_SIZE)
         ax.axvline(x=0, color='black', linewidth=2)
         ax.set_xlim(tick_range[0], tick_range[1])
         ax.set_xticks(np.arange(tick_range[0], tick_range[1] + 1))
 
-        yield ax
-
-        text = "\n".join(text)
-        PlotBase.add_to_legend(
-            ax,
-            text,
-            handles=mlines.Line2D(
-                [], [], label='Mean', **cls.MEAN_LINE_STYLE
-            ),
+        handles = dict(
             loc='center left',
             bbox_to_anchor=(1, 0.5),
         )
+
+        if has_mean:
+            handles['handles'] = mlines.Line2D(
+                [], [], label='Mean', **cls.MEAN_LINE_STYLE
+            )
+
+        PlotBase.add_to_legend(
+            ax, "\n".join(text), **handles,
+            prop=font_manager.FontProperties(
+                family='monospace',
+                size=LABEL_SIZE - 1,
+            )
+        )
+
+        yield ax
 
         return ax
