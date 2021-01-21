@@ -130,7 +130,11 @@ class PlotBase(object):
         if 'handles' in kwargs:
             handles.append(kwargs.pop('handles'))
         handles.append(text)
-        axes.legend(handles=handles, prop={'family': 'monospace'}, **kwargs)
+        axes.legend(
+            handles=handles,
+            prop=kwargs.pop('prop', {'family': 'monospace'}),
+            **kwargs
+        )
 
     @staticmethod
     def insert_colorbar(axes, data, label, **kwargs):
@@ -181,6 +185,7 @@ class PlotBase(object):
         axes.ticklabel_format(style='scientific', axis=which, scilimits=limits)
         axes.set_ylabel(
             f"Count $(10^{limits[1]})$",
+            fontsize=labelargs.pop('fontsize', None),
             rotation=labelargs.pop('rotation', 270),
             labelpad=labelargs.pop('labelpad', 18)
         )
