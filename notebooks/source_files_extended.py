@@ -14,6 +14,8 @@ aso_snow_depth = RasterFile(
     SNOW_DEPTH_DIR / '20180524_ASO_snow_depth_1m.tif',
     band_number=1
 )
+
+
 def load_aso_depth():
     aso_snow_depth_values = aso_snow_depth.band_values()
     # Mask to all pixels, where ASO snow depth values are present
@@ -24,6 +26,7 @@ def load_aso_depth():
     )
     return aso_snow_depth_values
 
+
 ###
 # SfM data
 ###
@@ -33,6 +36,7 @@ sfm_snow_depth = RasterFile(
 )
 assert aso_snow_depth.geo_transform == sfm_snow_depth.geo_transform
 
+
 def load_sfm_depth(aso_mask):
     sfm_snow_depth_values = sfm_snow_depth.band_values()
     np.ma.masked_where(
@@ -41,6 +45,7 @@ def load_sfm_depth(aso_mask):
         copy=False
     )
     return sfm_snow_depth_values
+
 
 SFM_SNOW_FREE = SNOW_DEPTH_DIR / '20180912_Agisoft_ERW_basin_dsm_1m.tif'
 sfm_snow_free = RasterFile(SFM_SNOW_FREE, band_number=3)
@@ -59,6 +64,7 @@ casi_classifier = RasterFile(
 )
 assert aso_snow_depth.geo_transform == casi_classifier.geo_transform
 
+
 def load_classifier_data(aso_mask):
     casi_classification = casi_classifier.band_values()
     np.ma.masked_where(
@@ -67,6 +73,7 @@ def load_classifier_data(aso_mask):
        copy=False
     )
     return casi_classification
+
 
 ###
 # Reference DEM
@@ -95,16 +102,17 @@ hillshade_snow_free = RasterFile(HS_SNOW_FREE, band_number=1)
 HS_SNOW_ON = SNOW_DEPTH_DIR / '20180524_Lidar_hs_1m.tif'
 hillshade_snow_on = RasterFile(HS_SNOW_ON, band_number=1)
 
+
 def load_control_surfaces():
     control_surfaces_values = control_surfaces.band_values()
     control_surfaces_values = np.ma.masked_where(
-        control_surfaces_values == 0, 
-        control_surfaces_values, 
+        control_surfaces_values == 0,
+        control_surfaces_values,
         copy=False
     )
-    
+
     return control_surfaces_values
-    
+
 
 def load_elevations(aso_mask):
     sfm_snow_free_values = sfm_snow_free.band_values()
@@ -123,6 +131,7 @@ def load_reference_dem(aso_mask):
     return np.ma.masked_where(
         aso_mask, reference_dem.band_values(), copy=False
     )
+
 
 def load_hillshade(aso_mask):
     snow_on = np.ma.masked_where(
@@ -146,3 +155,4 @@ def elevation_spread(raster, aso_mask):
     max_elevation = raster.band_values(band_number=2)
     np.ma.masked_where(aso_mask, max_elevation, copy=False)
     return max_elevation - min_elevation
+
