@@ -93,6 +93,16 @@ def side_by_side_plot(difference, extent, ortho_image, hillshade=None):
     return figure
 
 
+def rotate_axis_labels(ax):
+    ax.xaxis.set_ticks_position('both')
+    ax.xaxis.set_tick_params(rotation=55)
+
+    ax.yaxis.set_ticks_position('both')
+    ax.yaxis.set_tick_params(rotation=55)
+
+    ax.ticklabel_format(axis='both', style='plain')
+
+
 def style_area_axes(axes):
     set_axes_style(axes[0])
     set_axes_style(axes[2])
@@ -205,12 +215,16 @@ class Histogram(object):
 
             text.append(LEGEND_TEXT.format(" Mean", data_mean, 'm'))
             text.append(LEGEND_TEXT.format(" Std", np.nanstd(values), 'm'))
-            text.append(LEGEND_TEXT.format(" Median", np.nanmedian(values), 'm'))
+            text.append(LEGEND_TEXT.format(
+                "Median", np.nanmedian(values), 'm')
+            )
             if 'legend' in data:
                 text.append(data['legend'])
 
         ax.set_xlabel(SNOW_DEPTH_LABEL)
-        PlotBase.format_axes_scientific(ax, 'y', (4, 4), rotation=90, labelpad=2, fontsize=LABEL_SIZE)
+        PlotBase.format_axes_scientific(
+            ax, 'y', (4, 4), rotation=90, labelpad=2, fontsize=LABEL_SIZE
+        )
         ax.axvline(x=0, color='black', linewidth=2)
         ax.set_xlim(tick_range[0], tick_range[1])
         ax.set_xticks(np.arange(tick_range[0], tick_range[1] + 1))
@@ -236,3 +250,4 @@ class Histogram(object):
         yield ax
 
         return ax
+
