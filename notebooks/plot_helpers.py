@@ -22,9 +22,9 @@ from raster_compare.plots import PlotBase
 LABEL_SIZE = 11
 
 matplotlib.rcParams['axes.titlesize'] = LABEL_SIZE + 1
-matplotlib.rcParams['axes.labelsize'] = LABEL_SIZE
-matplotlib.rcParams['xtick.labelsize'] = LABEL_SIZE - 1
-matplotlib.rcParams['ytick.labelsize'] = LABEL_SIZE - 1
+matplotlib.rcParams['axes.labelsize'] = LABEL_SIZE - 2
+matplotlib.rcParams['xtick.labelsize'] = LABEL_SIZE - 2
+matplotlib.rcParams['ytick.labelsize'] = LABEL_SIZE - 2
 matplotlib.rcParams['legend.fontsize'] = LABEL_SIZE + 1
 matplotlib.rcParams['figure.titlesize'] = 16
 matplotlib.rcParams['figure.facecolor'] = 'ffffff'
@@ -163,7 +163,7 @@ def make_box_plot(data, label):
 
 
 class Histogram(object):
-    MEAN_LINE_STYLE = dict(linestyle='dashed', color='dimgrey')
+    MEAN_LINE_STYLE = dict(linestyle='dashed', color='dimgrey', linewidth=1)
 
     @classmethod
     def add_to_plot(cls, ax, **dataset):
@@ -191,7 +191,8 @@ class Histogram(object):
         )
 
         if 'skip_mean' not in dataset:
-            ax.axvline(x=data_mean, linewidth=2, **cls.MEAN_LINE_STYLE)
+            mean_style = dataset.pop('mean_style', cls.MEAN_LINE_STYLE)
+            ax.axvline(x=data_mean, **mean_style)
 
         return data, data_mean
 
