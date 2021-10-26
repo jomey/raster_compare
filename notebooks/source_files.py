@@ -5,9 +5,11 @@ import os
 import pandas as pd
 import sqlite3 as sql
 
-HOME_DIR = PurePath(f"{os.environ['HOME']}/scratch")
+from raster_compare.base import RasterFile
 
-SNOW_DEPTH_DIR = HOME_DIR / 'ERW-Paper'
+HOME_DIR = PurePath(f"{os.environ['HOME']}/project-data/ERW-Paper")
+
+SNOW_DEPTH_DIR = HOME_DIR / '1m'
 
 ORTHO_IMAGE = HOME_DIR / 'Orthomosaic/ERW_20180524_Agisoft_rgb_5m_ortho.tif'
 
