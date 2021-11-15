@@ -1,7 +1,6 @@
 import numpy as np
 
-from source_files import SNOW_DEPTH_DIR, HILLSHADE_SNOW_FREE, HILLSHADE_SNOW_ON
-from raster_compare.base import RasterFile
+from source_files import SNOW_DEPTH_DIR, HOME_DIR
 
 # ** NOTE **
 # All source files were masked to only ERW watershed boundaries.
@@ -85,7 +84,7 @@ assert aso_snow_depth.geo_transform == reference_dem.geo_transform
 ###
 # Co-registration DEM
 ###
-DEM_ASO_LIDAR_SNOW_ON = SNOW_DEPTH_DIR / '20180524_Lidar_ERW_basin_dsm_1m.tif'
+DEM_ASO_LIDAR_SNOW_ON = SNOW_DEPTH_DIR / '20180524_ASO_ERW_basin_dsm_1m.tif'
 dem_co_reg = RasterFile(DEM_ASO_LIDAR_SNOW_ON, band_number=3)
 assert aso_snow_depth.geo_transform == dem_co_reg.geo_transform
 
@@ -97,9 +96,9 @@ assert aso_snow_depth.geo_transform == control_surfaces.geo_transform
 # Hillshade
 # From 3m DEM; using the 1m had too many artifacts
 ###
-HS_SNOW_FREE = SNOW_DEPTH_DIR / '20180912_Lidar_hs_1m.tif'
+HS_SNOW_FREE = HOME_DIR / 'hillshade/20180912_Lidar_hs_ERW_basin_3m.tif'
 hillshade_snow_free = RasterFile(HS_SNOW_FREE, band_number=1)
-HS_SNOW_ON = SNOW_DEPTH_DIR / '20180524_Lidar_hs_1m.tif'
+HS_SNOW_ON = HOME_DIR / 'hillshade/20180524_Lidar_hs_ERW_basin_3m.tif'
 hillshade_snow_on = RasterFile(HS_SNOW_ON, band_number=1)
 
 
