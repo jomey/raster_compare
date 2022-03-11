@@ -53,17 +53,20 @@ def load_sfm_depth(aso_mask):
     return sfm_snow_depth_values
 
 
-sfm_snow_free = RasterFile(
-    SNOW_DEPTH_DIR / f'20180912_Agisoft_ERW_basin_dsm_{RESOLUTION}.tif',
-    band_number=1
-)
-assert sfm_snow_free.geo_transform == sfm_snow_depth.geo_transform
+def sfm_snow_dsm():
+    sfm_snow_free = RasterFile(
+        SNOW_DEPTH_DIR / f'20180912_Agisoft_ERW_basin_dsm_{RESOLUTION}.vrt',
+        band_number=1
+    )
+    assert sfm_snow_free.geo_transform == sfm_snow_depth.geo_transform
 
-sfm_snow_on = RasterFile(
-    SNOW_DEPTH_DIR / f'20180524_Agisoft_ERW_basin_dsm_{RESOLUTION}.tif',
-    band_number=1
-)
-assert sfm_snow_on.geo_transform == sfm_snow_depth.geo_transform
+    sfm_snow_on = RasterFile(
+        SNOW_DEPTH_DIR / f'20180524_Agisoft_ERW_basin_dsm_{RESOLUTION}.vrt',
+        band_number=1
+    )
+    assert sfm_snow_on.geo_transform == sfm_snow_depth.geo_transform
+    
+    return sfm_snow_free, sfm_snow_on
 
 ###
 # Classification
