@@ -46,7 +46,7 @@ def get_no_data(data_frame, column_name):
 def column_to_volume(snow_depth, x_resolution, y_resolution):
     length = len(snow_depth)
     resolution = math.fabs(x_resolution * y_resolution)
-    result = np.empty(length, dtype=snow_depth.dtype)
+    result = np.zeros(length, dtype=snow_depth.dtype)
     for i in prange(length):
         result[i] = snow_volume(snow_depth[i], resolution)
     return result
@@ -63,22 +63,23 @@ def snow_volume(snow_depth, resolution):
 @numba.jit
 def column_to_swe(snow_depth, x_resolution, y_resolution):
     length = len(snow_depth)
-    resolution = math.fabs(x_resolution * y_resolution)
-    result = np.empty(length, dtype=snow_depth.dtype)
+    cell_area = math.fabs(x_resolution * y_resolution)
+    result = np.zeros(length, dtype=snow_depth.dtype)
     for i in range(length):
-        result[i] = swe_from_depth(snow_depth[i], resolution)
+        result[i] = swe_from_depth(snow_depth[i], cell_area)
     return result
 
 
 @numba.jit
-def swe_from_depth(snow_depth, resolution):
+def swe_from_depth(snow_depth, cell_area):
     """
     Median SWE from ASO NSIDC map 394 kg/m^3
+    SWE is returned as m^3
     """
     if snow_depth < 0:
         return 0.0
     else:
-        return snow_depth * .394
+        return snow_depth * .394 * cell_area
 
 
 def diff_vol_swe(df, aso, sfm):

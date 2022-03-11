@@ -1,16 +1,23 @@
 import numpy as np
+import os
 
-from source_files import SNOW_DEPTH_DIR, HOME_DIR
+from pathlib import PurePath
+
+from raster_compare.base import RasterFile
 
 # ** NOTE **
 # All source files were masked to only ERW watershed boundaries.
 ##
 
+HOME_DIR = PurePath(f"{os.environ['HOME']}/skiles-group1/ERW-SfM")
+RESOLUTION='3m'
+SNOW_DEPTH_DIR = HOME_DIR / RESOLUTION
+
 ###
 # ASO data
 ###
 aso_snow_depth = RasterFile(
-    SNOW_DEPTH_DIR / '20180524_ASO_snow_depth_1m.tif',
+    SNOW_DEPTH_DIR / f'20180524_ASO_snow_depth_{RESOLUTION}.tif',
     band_number=1
 )
 
@@ -30,7 +37,7 @@ def load_aso_depth():
 # SfM data
 ###
 sfm_snow_depth = RasterFile(
-    SNOW_DEPTH_DIR / '20180524_Agisoft_snow_depth_1m.tif',
+    SNOW_DEPTH_DIR / f'20180524_Agisoft_snow_depth_{RESOLUTION}.tif',
     band_number=1
 )
 assert aso_snow_depth.geo_transform == sfm_snow_depth.geo_transform
@@ -46,25 +53,31 @@ def load_sfm_depth(aso_mask):
     return sfm_snow_depth_values
 
 
-SFM_SNOW_FREE = SNOW_DEPTH_DIR / '20180912_Agisoft_ERW_basin_dsm_1m.tif'
-sfm_snow_free = RasterFile(SFM_SNOW_FREE, band_number=3)
-assert aso_snow_depth.geo_transform == sfm_snow_free.geo_transform
+def sfm_snow_dsm():
+    sfm_snow_free = RasterFile(
+        SNOW_DEPTH_DIR / f'20180912_Agisoft_ERW_basin_dsm_{RESOLUTION}.vrt',
+        band_number=1
+    )
+    assert sfm_snow_free.geo_transform == sfm_snow_depth.geo_transform
 
-SFM_SNOW_ON = SNOW_DEPTH_DIR / '20180524_Agisoft_ERW_basin_dsm_1m.tif'
-sfm_snow_on = RasterFile(SFM_SNOW_ON, band_number=3)
-assert aso_snow_depth.geo_transform == sfm_snow_on.geo_transform
+    sfm_snow_on = RasterFile(
+        SNOW_DEPTH_DIR / f'20180524_Agisoft_ERW_basin_dsm_{RESOLUTION}.vrt',
+        band_number=1
+    )
+    assert sfm_snow_on.geo_transform == sfm_snow_depth.geo_transform
+    
+    return sfm_snow_free, sfm_snow_on
 
 ###
 # Classification
 ###
-casi_classifier = RasterFile(
-    SNOW_DEPTH_DIR / '20180524_ASO_CASI_ERW_basin_1m.tif',
-    band_number=1
-)
-assert aso_snow_depth.geo_transform == casi_classifier.geo_transform
-
-
 def load_classifier_data(aso_mask):
+    casi_classifier = RasterFile(
+        SNOW_DEPTH_DIR / f'20180524_ASO_CASI_ERW_basin_{RESOLUTION}.tif',
+        band_number=1
+    )
+    assert aso_snow_depth.geo_transform == casi_classifier.geo_transform
+
     casi_classification = casi_classifier.band_values()
     np.ma.masked_where(
        aso_mask,
@@ -77,32 +90,35 @@ def load_classifier_data(aso_mask):
 ###
 # Reference DEM
 ###
-DEM_SNOW_FREE = SNOW_DEPTH_DIR / '20180912_ASO_ERW_basin_dsm_1m.tif'
-reference_dem = RasterFile(DEM_SNOW_FREE, band_number=1)
-assert aso_snow_depth.geo_transform == reference_dem.geo_transform
+def load_reference_dem(aso_mask):
+    DEM_SNOW_FREE = SNOW_DEPTH_DIR / f'20180912_ASO_NSIDC_ERW_basin_dsm_{RESOLUTION}.tif'
+    reference_dem = RasterFile(DEM_SNOW_FREE, band_number=1)
+    assert aso_snow_depth.geo_transform == reference_dem.geo_transform
+
+    return reference_dem, np.ma.masked_where(
+        aso_mask, reference_dem.band_values(), copy=False
+    )
+
 
 ###
 # Co-registration DEM
 ###
-DEM_ASO_LIDAR_SNOW_ON = SNOW_DEPTH_DIR / '20180524_ASO_ERW_basin_dsm_1m.tif'
-dem_co_reg = RasterFile(DEM_ASO_LIDAR_SNOW_ON, band_number=3)
-assert aso_snow_depth.geo_transform == dem_co_reg.geo_transform
+def load_co_reg_dem():
+    DEM_ASO_LIDAR_SNOW_ON = SNOW_DEPTH_DIR / f'20180524_Lidar_ERW_basin_dsm_{RESOLUTION}.tif'
+    dem_co_reg = RasterFile(DEM_ASO_LIDAR_SNOW_ON, band_number=3)
+    assert aso_snow_depth.geo_transform == dem_co_reg.geo_transform
 
-STABLE_GROUND = SNOW_DEPTH_DIR / '20180524_NoR_FS_no_snow_1m.tif'
-control_surfaces = RasterFile(STABLE_GROUND, band_number=1)
-assert aso_snow_depth.geo_transform == control_surfaces.geo_transform
+    return dem_co_reg.band_values()
+
 
 ###
-# Hillshade
-# From 3m DEM; using the 1m had too many artifacts
+# Classification raster with control surfaces set to 1
 ###
-HS_SNOW_FREE = HOME_DIR / 'hillshade/20180912_Lidar_hs_ERW_basin_3m.tif'
-hillshade_snow_free = RasterFile(HS_SNOW_FREE, band_number=1)
-HS_SNOW_ON = HOME_DIR / 'hillshade/20180524_Lidar_hs_ERW_basin_3m.tif'
-hillshade_snow_on = RasterFile(HS_SNOW_ON, band_number=1)
-
-
 def load_control_surfaces():
+    STABLE_GROUND = SNOW_DEPTH_DIR / f'20180524_NoR_FS_no_snow_{RESOLUTION}.tif'
+    control_surfaces = RasterFile(STABLE_GROUND, band_number=1)
+    assert aso_snow_depth.geo_transform == control_surfaces.geo_transform
+
     control_surfaces_values = control_surfaces.band_values()
     control_surfaces_values = np.ma.masked_where(
         control_surfaces_values == 0,
@@ -113,33 +129,23 @@ def load_control_surfaces():
     return control_surfaces_values
 
 
-def load_elevations(aso_mask):
-    sfm_snow_free_values = sfm_snow_free.band_values()
-    sfm_snow_on_values = sfm_snow_on.band_values()
-
-    for values in [
-        sfm_snow_free_values,
-        sfm_snow_on_values,
-    ]:
-        np.ma.masked_where(aso_mask, values, copy=False)
-
-    return sfm_snow_free_values, sfm_snow_on_values, load_reference_dem(aso_mask)
-
-
-def load_reference_dem(aso_mask):
-    return np.ma.masked_where(
-        aso_mask, reference_dem.band_values(), copy=False
+###
+# Hillshade
+###
+def load_hillshade(aso_mask=None):
+    hillshade = RasterFile(
+        HOME_DIR / f'hillshade/20180912_Lidar_hs_ERW_basin_{RESOLUTION}.tif', 
+        band_number=1
     )
-
-
-def load_hillshade(aso_mask):
-    snow_on = np.ma.masked_where(
-        aso_mask, hillshade_snow_on.band_values(), copy=False
-    )
-    snow_free = np.ma.masked_where(
-        aso_mask, hillshade_snow_free.band_values(), copy=False
-    )
-    return snow_on, snow_free
+    
+    hillshade_values = hillshade.band_values()
+    
+    if aso_mask is not None:
+        hillshade_values = np.ma.masked_where(
+            aso_mask, hillshade_values, copy=False
+        )
+    
+    return hillshade_values
 
 
 def load_point_count(raster, aso_mask):
@@ -154,4 +160,3 @@ def elevation_spread(raster, aso_mask):
     max_elevation = raster.band_values(band_number=2)
     np.ma.masked_where(aso_mask, max_elevation, copy=False)
     return max_elevation - min_elevation
-
